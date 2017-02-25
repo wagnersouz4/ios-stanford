@@ -82,7 +82,6 @@ class ViewController: UIViewController {
             calculator.performOperation(mathematicalSymbol)
         }
         
-        
         if let accumulator = calculator.result.accumulator, let description = calculator.result.description {
             displayValue = accumulator
             if !userIsInTheMiddleOfTyping {
