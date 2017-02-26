@@ -82,7 +82,7 @@ struct Calculator {
     // Method to return a format value as String, which will be used in the description
     private func formatNumberToString(_ number: Double) -> String {
         numberFormat.maximumFractionDigits = 6
-        // this is necessary when there is a value .8, which needed to be printted as 0.8
+        // the value .x will be printed out as 0.x
         numberFormat.minimumIntegerDigits = 1
         // if the formatting was not possible, the stringfied number is returned
         return numberFormat.string(from: NSNumber(value: number)) ?? String(number)
