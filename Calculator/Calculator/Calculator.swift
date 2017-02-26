@@ -16,11 +16,11 @@ struct Calculator {
     
     // Data structure of a pending binary operation to support binary operations(+, -, *, /).
     private struct PendingBinaryOperation {
+        let function: BinaryOperation
         let firstOperand: Double
-        let operation: BinaryOperation
         
         func perform(with secondOperand: Double) -> Double {
-            return operation(firstOperand, secondOperand)
+            return function(firstOperand, secondOperand)
         }
     }
     
@@ -71,7 +71,7 @@ struct Calculator {
     }
 
     // Property to obtain the last operation performed
-    private var lastOperationSymbol: String?
+    private var lastPerformedOperation: Operation?
     
     // The calculator's description
     private var description = ""
@@ -79,110 +79,79 @@ struct Calculator {
     mutating func setOperand(_ operand: Double) {
         accumulator = operand
         
-        // if the last operation was not a binary one, the description is reseted
-        if let symbol = lastOperationSymbol, let operation = operations[symbol] {
-            switch operation {
-            case .binary:
+        if let lasOperation = lastPerformedOperation {
+            switch lasOperation {
+            case .equals, .binary:
                 break
             default:
-                description = ""
+                description = String(operand)
             }
+        } else {
+            description = description + String(operand)
         }
     }
     
-    // @escaping is needed as the closure mathFunction will be called from outside the performBinaryOperation's enclosing scope
-    private mutating func performBinaryOperation(withMathFunction mathFunction: @escaping BinaryOperation) {
+    private mutating func performPendingBinaryOperation() {
         guard let value = accumulator else { return }
-        
-        if resultIsPending {
-            accumulator = pendingBinaryOperation?.perform(with: value)
-            if let newAccumulator = accumulator {
-                pendingBinaryOperation = PendingBinaryOperation(firstOperand: newAccumulator, operation: mathFunction)
-            }
-        } else {
-            pendingBinaryOperation = PendingBinaryOperation(firstOperand: value, operation: mathFunction)
-        }
+        accumulator = pendingBinaryOperation?.perform(with: value)
     }
     
     mutating func performOperation(_ mathematicalSymbol: String) {
         if let operation = operations[mathematicalSymbol] {
             switch operation {
             case .constant(let value):
-                // if the current operation is not in the middle of another operation
-                if let symbol = lastOperationSymbol, let lastOperation = operations[symbol] {
-                    switch lastOperation {
-                    // if the last performed operation was from binary one, the description needs to be concatenated
-                    case .binary:
-                        description = description + mathematicalSymbol
-                    // if the las operation wasn't a binary one the current description will be discarded
-                    default:
-                        description =  mathematicalSymbol
+                accumulator = value
+                description = (resultIsPending) ? description + mathematicalSymbol : mathematicalSymbol
+            case .unary(let function):
+                guard let value = accumulator else { return }
+                
+                if resultIsPending {
+                    description = description + mathematicalSymbol + "(" + String(value) + ")"
+                }else {
+                    description = mathematicalSymbol + "(" + description + ")"
+                }
+                
+                accumulator = function(value)
+            case .binary(let function):
+                guard let value = accumulator else { return }
+                
+                if resultIsPending {
+                    description = description + String(accumulator!) + mathematicalSymbol
+                    performPendingBinaryOperation()
+                    if let newValue = accumulator {
+                        pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: newValue)
                     }
                 } else {
-                    description = mathematicalSymbol
-                }
-                accumulator = value
-            case .unary(let mathFunction):
-                if let value = accumulator {
-                    if let symbol = lastOperationSymbol, let lastOperation = operations[symbol] {
-                        switch lastOperation {
-                        case .binary:
-                            description = description + "\(mathematicalSymbol)(\(String(value)))"
-                        default:
-                            description = "\(mathematicalSymbol)(\(description))"
-                        }
-                    } else {
-                        description = "\(mathematicalSymbol)(\(String(value)))"
-                    }
-                    accumulator = mathFunction(value)
-                }
-            case .binary(let mathFunction):
-                var lastOperationWasBinary = false
-                if let value = accumulator {
-                    if let symbol = lastOperationSymbol, let lastOperation = operations[symbol] {
-                        switch lastOperation {
-                        case .binary:
-                            // if the user has typed 7+7+7 (without using the equals operator)
-                            description = description + String(value) + mathematicalSymbol
-                            lastOperationWasBinary = true
-                        default:
-                            break
-                        }
-                    }
-                    // the last operation was not binary the description needs to be concatenated differently
-                    if !lastOperationWasBinary {
-                        description = (description != "") ? description + mathematicalSymbol : description + String(value) + mathematicalSymbol
-                    }
-                    performBinaryOperation(withMathFunction: mathFunction)
+                    pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: value)
+                    description = description + mathematicalSymbol
+                    accumulator = nil
                 }
             case .equals:
-                // there must be a value in the accumulator in order to perform a pending binary operation
                 guard let value = accumulator else { return }
-                if resultIsPending, let symbol = lastOperationSymbol, let lastOperation = operations[symbol] {
+                if let lastOperation = lastPerformedOperation {
                     switch lastOperation {
                     case .binary:
                         description = description + String(value)
                     default:
                         break
                     }
-                    
-                    accumulator = pendingBinaryOperation?.perform(with: value)
-                    pendingBinaryOperation = nil
                 }
-            case .custom(let customFunction):
-                let customValue = customFunction()
-                accumulator = customValue
-                description = String(customValue)
+                performPendingBinaryOperation()
+                pendingBinaryOperation = nil
+            case .custom(let function):
+                accumulator = function()
+                if let value = accumulator {
+                    description = String(value)
+                }
             }
-            // saving the symbol of the last operation performed
-            lastOperationSymbol = mathematicalSymbol
+            lastPerformedOperation = operation
         }
     }
     
     mutating func clean() {
         accumulator = nil
-        description = ""
         pendingBinaryOperation = nil
-        lastOperationSymbol = nil
+        lastPerformedOperation = nil
+        description = ""
     }
 }
