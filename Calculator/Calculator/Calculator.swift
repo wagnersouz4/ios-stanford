@@ -51,7 +51,7 @@ struct Calculator {
         "÷": Operation.binary({ $0 / $1 }),
         "×": Operation.binary({ $0 * $1 }),
         "=": Operation.equals,
-        "⦿": Operation.custom({ 0.1 / Double(arc4random()) }),
+        "Rand": Operation.custom({ 1 / Double(arc4random())*1000000 }), // closure to generate a random double precision number
     ]
     
     // Calculator's accumulator
@@ -76,18 +76,30 @@ struct Calculator {
     // The calculator's description
     private var description = ""
     
+    // Property to format value in the description to have at maximum 6 decimal digits
+    private let numberFormat = NumberFormatter()
+    
+    // Method to return a format value as String, which will be used in the description
+    private func formatNumberToString(_ number: Double) -> String {
+        numberFormat.maximumFractionDigits = 6
+        // this is necessary when there is a value .8, which needed to be printted as 0.8
+        numberFormat.minimumIntegerDigits = 1
+        // if the formatting was not possible, the stringfied number is returned
+        return numberFormat.string(from: NSNumber(value: number)) ?? String(number)
+    }
+    
     mutating func setOperand(_ operand: Double) {
         accumulator = operand
         
         if let lasOperation = lastPerformedOperation {
             switch lasOperation {
-            case .equals, .binary:
+            case .binary:
                 break
             default:
-                description = String(operand)
+                description = formatNumberToString(operand)
             }
         } else {
-            description = description + String(operand)
+            description = description + formatNumberToString(operand)
         }
     }
     
@@ -106,7 +118,7 @@ struct Calculator {
                 guard let value = accumulator else { return }
                 
                 if resultIsPending {
-                    description = description + mathematicalSymbol + "(" + String(value) + ")"
+                    description = description + mathematicalSymbol + "(" + formatNumberToString(value) + ")"
                 }else {
                     description = mathematicalSymbol + "(" + description + ")"
                 }
@@ -116,7 +128,7 @@ struct Calculator {
                 guard let value = accumulator else { return }
                 
                 if resultIsPending {
-                    description = description + String(accumulator!) + mathematicalSymbol
+                    description = description + formatNumberToString(value) + mathematicalSymbol
                     performPendingBinaryOperation()
                     if let newValue = accumulator {
                         pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: newValue)
@@ -131,7 +143,7 @@ struct Calculator {
                 if let lastOperation = lastPerformedOperation {
                     switch lastOperation {
                     case .binary:
-                        description = description + String(value)
+                        description = description + formatNumberToString(value)
                     default:
                         break
                     }
@@ -141,7 +153,7 @@ struct Calculator {
             case .custom(let function):
                 accumulator = function()
                 if let value = accumulator {
-                    description = String(value)
+                    description = formatNumberToString(value)
                 }
             }
             lastPerformedOperation = operation

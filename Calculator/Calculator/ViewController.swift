@@ -16,24 +16,13 @@ class ViewController: UIViewController {
     // Label containing the sequence of operands and operations
     @IBOutlet weak var descriptionLabel: UILabel!
     
-    // Property of type NumberFormatter to auxiliate the restriction of 6 decimal digits at maximum
-    private var numberFormat = NumberFormatter()
-    
     // Property to control when the user is the middle of a typing
     private var userIsInTheMiddleOfTyping = false
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Setting the number of digits after a decimal point.
-        numberFormat.maximumFractionDigits = 6
-        numberFormat.minimumIntegerDigits = 1
-    }
-    
+
     // Computed property to get and set the display's label as a double value
     private var displayValue: Double? {
         get {
-            // In order to return, the display's label should be a value convertible to Double.
-            // This property is optional as Double(" ") is nil, and " " is the initial display's value
+            // If there is a convertible to Double value in the display
             if let currentDisplayText = displayLabel.text, let value = Double(currentDisplayText) {
                 return value
             }
@@ -42,8 +31,7 @@ class ViewController: UIViewController {
         set {
             // If the new value is nil the display label will be set to " ", its initial value
             if let value = newValue {
-                // If a number is <= 0.0000001 (6 times 0s) it will be 0, according to the rule of 6 decimal digits at maximum
-                displayLabel.text = numberFormat.string(from: NSNumber(value: value))
+                displayLabel.text = formatNumberToString(value)
             } else {
                 displayLabel.text = " "
             }
@@ -110,6 +98,14 @@ class ViewController: UIViewController {
         displayValue = nil
         descriptionLabel.text = " "
         userIsInTheMiddleOfTyping = false
+    }
+    
+    // This function will format a number to a string, and will follow the rule of 6 decimal digits at maximum
+    private func formatNumberToString(_ number: Double) -> String {
+        let  numberFormat = NumberFormatter()
+        numberFormat.maximumFractionDigits = 6
+        numberFormat.minimumIntegerDigits = 1
+        return numberFormat.string(from: NSNumber(value: number)) ?? String(number)
     }
 }
 
