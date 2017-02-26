@@ -91,8 +91,8 @@ struct Calculator {
     mutating func setOperand(_ operand: Double) {
         accumulator = operand
         
-        if let lasOperation = lastPerformedOperation {
-            switch lasOperation {
+        if let lastOperation = lastPerformedOperation {
+            switch lastOperation {
             case .binary:
                 break
             default:
