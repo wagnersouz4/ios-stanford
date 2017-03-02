@@ -69,7 +69,7 @@ struct Calculator {
     var resultIsPending: Bool {
         return pendingBinaryOperation != nil
     }
-
+    
     // Property to obtain the last operation performed
     private var lastPerformedOperation: Operation?
     
@@ -151,10 +151,14 @@ struct Calculator {
                 performPendingBinaryOperation()
                 pendingBinaryOperation = nil
             case .custom(let function):
-                accumulator = function()
-                if let value = accumulator {
+                let value = function()
+                
+                if resultIsPending {
+                    description = description + formatNumberToString(value)
+                } else {
                     description = formatNumberToString(value)
                 }
+                accumulator = value
             }
             lastPerformedOperation = operation
         }
