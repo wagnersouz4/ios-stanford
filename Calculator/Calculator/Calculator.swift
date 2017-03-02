@@ -99,7 +99,7 @@ struct Calculator {
                 description = formatNumberToString(operand)
             }
         } else {
-            description = description + formatNumberToString(operand)
+            description = formatNumberToString(operand)
         }
     }
     
@@ -113,12 +113,19 @@ struct Calculator {
             switch operation {
             case .constant(let value):
                 accumulator = value
-                description = (resultIsPending) ? description + mathematicalSymbol : mathematicalSymbol
+                
+                if resultIsPending {
+                    description.append(mathematicalSymbol)
+                } else {
+                    description = mathematicalSymbol
+                }
             case .unary(let function):
                 guard let value = accumulator else { return }
                 
                 if resultIsPending {
-                    description = description + mathematicalSymbol + "(" + formatNumberToString(value) + ")"
+                    // String's append method was used instead of concatenate directly to obtain a more readable code
+                    let string = mathematicalSymbol + "(" + formatNumberToString(value) + ")"
+                    description.append(string)
                 }else {
                     description = mathematicalSymbol + "(" + description + ")"
                 }
@@ -128,14 +135,15 @@ struct Calculator {
                 guard let value = accumulator else { return }
                 
                 if resultIsPending {
-                    description = description + formatNumberToString(value) + mathematicalSymbol
+                    let string = formatNumberToString(value) + mathematicalSymbol
+                    description.append(string)
                     performPendingBinaryOperation()
                     if let newValue = accumulator {
                         pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: newValue)
                     }
                 } else {
                     pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: value)
-                    description = description + mathematicalSymbol
+                    description.append(mathematicalSymbol)
                     accumulator = nil
                 }
             case .equals:
@@ -143,7 +151,7 @@ struct Calculator {
                 if let lastOperation = lastPerformedOperation {
                     switch lastOperation {
                     case .binary:
-                        description = description + formatNumberToString(value)
+                        description.append(formatNumberToString(value))
                     default:
                         break
                     }
@@ -154,7 +162,7 @@ struct Calculator {
                 let value = function()
                 
                 if resultIsPending {
-                    description = description + formatNumberToString(value)
+                    description.append(formatNumberToString(value))
                 } else {
                     description = formatNumberToString(value)
                 }
