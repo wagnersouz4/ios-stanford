@@ -32,8 +32,6 @@ class ViewController: UIViewController {
             // If the new value is nil the display label will be set to " ", its initial value
             if let value = newValue {
                 displayLabel.text = formatNumberToString(value)
-            } else {
-                displayLabel.text = " "
             }
         }
     }
@@ -81,14 +79,9 @@ class ViewController: UIViewController {
     
     // Calculator's feature to erase typed digits
     @IBAction func erase() {
-        if let labelText = displayLabel.text, labelText != " " {
-            // supressing the last element returned by the method popLast
-            _ = displayLabel.text!.characters.popLast()
-            
-            if displayLabel.text?.characters.count == 0 {
-                displayValue = nil
-                userIsInTheMiddleOfTyping = false
-            }
+        if displayLabel.text != nil {
+            // supressing the last element returned by the method pop
+            _ = displayLabel.text?.characters.popLast()
         }
     }
     
