@@ -70,8 +70,8 @@ struct Calculator {
         return pendingBinaryOperation != nil
     }
     
-    // Property to obtain the last operation performed
-    private var lastPerformedOperation: Operation?
+    // Property to obtain the symbol of the last operation performed
+    private var lastSymbol: String?
     
     // The calculator's description
     private var description = ""
@@ -91,7 +91,7 @@ struct Calculator {
     mutating func setOperand(_ operand: Double) {
         accumulator = operand
         
-        if let lastOperation = lastPerformedOperation {
+        if let lastSymbol = lastSymbol, let lastOperation = operations[lastSymbol] {
             switch lastOperation {
             case .binary:
                 break
@@ -148,7 +148,7 @@ struct Calculator {
                 }
             case .equals:
                 guard let value = accumulator else { return }
-                if let lastOperation = lastPerformedOperation {
+                if let lastSymbol = lastSymbol, let lastOperation = operations[lastSymbol] {
                     switch lastOperation {
                     case .binary:
                         description.append(formatNumberToString(value))
@@ -168,14 +168,14 @@ struct Calculator {
                 }
                 accumulator = value
             }
-            lastPerformedOperation = operation
+            lastSymbol = mathematicalSymbol
         }
     }
     
     mutating func clean() {
         accumulator = nil
         pendingBinaryOperation = nil
-        lastPerformedOperation = nil
+        lastSymbol = nil
         description = ""
     }
 }
