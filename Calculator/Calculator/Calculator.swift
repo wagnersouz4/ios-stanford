@@ -11,11 +11,11 @@ import Foundation
 // Calulator's engine
 struct Calculator {
     
-    // MARK: - Properties
-    
     // Using type alias to make the code more readable and avoid code repetition
     private typealias BinaryOperation = ((Double, Double) -> Double)
     
+    // MARK: - Properties
+
     // Data structure of a pending binary operation to support binary operations(+, -, *, /).
     private struct PendingBinaryOperation {
         let function: BinaryOperation
