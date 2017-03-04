@@ -10,6 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    // MARK: - Properties
+    
     // Label corresponding the calculator's display
     @IBOutlet weak var displayLabel: UILabel!
   
@@ -39,6 +41,8 @@ class ViewController: UIViewController {
     // Calculator's instance to be used in this view
     private var calculator = Calculator()
     
+    // MARK: - Methods
+
     // Update the display when a number (0-9) is clicked in the calculator's keyboard
     @IBAction func touchDigit(_ sender: UIButton) {
         // Make sure the digit pressed has a title

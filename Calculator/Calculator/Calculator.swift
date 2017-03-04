@@ -11,6 +11,8 @@ import Foundation
 // Calulator's engine
 struct Calculator {
     
+    // MARK: - Properties
+    
     // Using type alias to make the code more readable and avoid code repetition
     private typealias BinaryOperation = ((Double, Double) -> Double)
     
@@ -78,6 +80,8 @@ struct Calculator {
     
     // Property to format value in the description to have at maximum 6 decimal digits
     private let numberFormat = NumberFormatter()
+    
+    // MARK: - Methods
     
     // Method to return a format value as String, which will be used in the description
     private func formatNumberToString(_ number: Double) -> String {
