@@ -88,7 +88,7 @@ class ViewController: UIViewController {
     // Action to clean/reset the calculator
     @IBAction func clean() {
         calculator.clean()
-        displayValue = nil
+        displayLabel.text = " "
         descriptionLabel.text = " "
         userIsInTheMiddleOfTyping = false
     }
