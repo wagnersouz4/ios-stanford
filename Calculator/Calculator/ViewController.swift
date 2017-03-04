@@ -79,10 +79,8 @@ class ViewController: UIViewController {
     
     // Calculator's feature to erase typed digits
     @IBAction func erase() {
-        if displayLabel.text != nil {
-            // supressing the last element returned by the method pop
-            _ = displayLabel.text?.characters.popLast()
-        }
+        // supressing the last element returned by the method pop
+        _ = displayLabel.text?.characters.popLast()
     }
     
     // Action to clean/reset the calculator
