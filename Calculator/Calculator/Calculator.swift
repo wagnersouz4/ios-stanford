@@ -106,6 +106,7 @@ struct Calculator {
     private mutating func performPendingBinaryOperation() {
         guard let value = accumulator else { return }
         accumulator = pendingBinaryOperation?.perform(with: value)
+        pendingBinaryOperation = nil
     }
     
     mutating func performOperation(_ mathematicalSymbol: String) {
@@ -157,7 +158,6 @@ struct Calculator {
                     }
                 }
                 performPendingBinaryOperation()
-                pendingBinaryOperation = nil
             case .custom(let function):
                 let value = function()
                 
