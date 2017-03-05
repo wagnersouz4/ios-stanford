@@ -88,8 +88,7 @@ class ViewController: UIViewController {
     
     // Calculator's feature to erase typed digits
     @IBAction func erase() {
-        if let count = displayLabel.text?.characters.count, count > 0 {
-            // supressing the last element returned by the method pop
+        if userIsInTheMiddleOfTyping {
             _ = displayLabel.text?.characters.popLast()
         } else {
             calculator.undo()
