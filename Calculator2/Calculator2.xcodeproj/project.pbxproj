@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B09D77D1E6C6898004FAC66 /* UICalculatorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B09D77C1E6C6898004FAC66 /* UICalculatorButton.swift */; };
 		3B8E51B41E5E59CD000D8296 /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E51B31E5E59CD000D8296 /* Calculator.swift */; };
 		3BC8D2431E5E430B0068093D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC8D2421E5E430B0068093D /* AppDelegate.swift */; };
 		3BC8D2451E5E430B0068093D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC8D2441E5E430B0068093D /* ViewController.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B09D77C1E6C6898004FAC66 /* UICalculatorButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UICalculatorButton.swift; sourceTree = "<group>"; };
 		3B8E51B31E5E59CD000D8296 /* Calculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
 		3BC8D23F1E5E430B0068093D /* Calculator2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Calculator2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BC8D2421E5E430B0068093D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 				3BC8D2491E5E430B0068093D /* Assets.xcassets */,
 				3BC8D24B1E5E430B0068093D /* LaunchScreen.storyboard */,
 				3BC8D24E1E5E430B0068093D /* Info.plist */,
+				3B09D77C1E6C6898004FAC66 /* UICalculatorButton.swift */,
 			);
 			name = Calculator2;
 			path = Calculator;
@@ -143,6 +146,7 @@
 				3BC8D2451E5E430B0068093D /* ViewController.swift in Sources */,
 				3BC8D2431E5E430B0068093D /* AppDelegate.swift in Sources */,
 				3B8E51B41E5E59CD000D8296 /* Calculator.swift in Sources */,
+				3B09D77D1E6C6898004FAC66 /* UICalculatorButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
