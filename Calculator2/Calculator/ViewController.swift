@@ -112,11 +112,13 @@ class ViewController: UIViewController {
         if title == "→M" {
             if let value = displayValue {
                 variable = ["M": value]
+                userIsInTheMiddleOfTyping = false
                 updateDisplay()
             }
             
         } else if title == "M" {
             calculator.setOperand(variable: "M")
+            userIsInTheMiddleOfTyping = false
             updateDisplay()
         }
     }
