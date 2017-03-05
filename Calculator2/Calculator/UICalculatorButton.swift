@@ -10,6 +10,6 @@ import UIKit
 
 class UICalculatorButton: UIButton {
 
-    var name = ""
+    var symbol = ""
 
 }
