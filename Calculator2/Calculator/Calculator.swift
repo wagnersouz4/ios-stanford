@@ -82,9 +82,12 @@ struct Calculator {
         "tan": Operation.unary(tan),
         "cos": Operation.unary(cos),
         "sin": Operation.unary(sin),
+        "tanh": Operation.unary(tanh),
+        "cosh": Operation.unary(cosh),
+        "sinh": Operation.unary(sinh),
         "㏑": Operation.unary(log),
-        "㏒₁₀": Operation.unary(log10),
-        "±": Operation.unary({ -$0 }),
+        "log": Operation.unary(log10),
+        "-": Operation.unary({ -$0 }),
         "x⁻¹": Operation.unary({ 1 / $0 }),
         "x²": Operation.unary({ pow($0, 2) }),
         "x³": Operation.unary({ pow($0, 3) }),
@@ -165,7 +168,7 @@ struct Calculator {
                 }
                 return false
             }
-            print(memory)
+
             for m in memory {
                 switch m {
                 case .number(let number):
