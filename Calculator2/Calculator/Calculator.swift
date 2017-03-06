@@ -182,7 +182,7 @@ struct Calculator {
                             } else {
                                 description = symbol + "(" + description + ")"
                             }
-                            accumulator = function(accumulator!)
+                            accumulator = function(value)
                         case .binary(let function):
                             guard let value = accumulator else { break }
                             if operationIsPending {
