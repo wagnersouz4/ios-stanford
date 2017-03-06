@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  Calculator
 //
-//  Created by @wagnersouz4 on 22/02/17.
+//  Created by Wagner Souza on 22/02/17.
 //  Copyright © 2017 Wagner Souza. All rights reserved.
 //
 
@@ -17,6 +17,8 @@ class ViewController: UIViewController {
     
     // Label containing the sequence of operands and operations
     @IBOutlet weak var descriptionLabel: UILabel!
+    
+    @IBOutlet weak var memoryLabel: UILabel!
     
     // Property to control when the user is the middle of a typing
     private var userIsInTheMiddleOfTyping = false
@@ -46,10 +48,31 @@ class ViewController: UIViewController {
     
     // MARK: - Methods
     
+    // This function will format a number to a string, and will follow the rule of 6 decimal digits at maximum
+    private func formatNumberToString(_ number: Double) -> String {
+        let  numberFormat = NumberFormatter()
+        numberFormat.maximumFractionDigits = 6
+        numberFormat.minimumIntegerDigits = 1
+        return numberFormat.string(from: NSNumber(value: number)) ?? String(number)
+    }
+    
+    func updateDisplay() {
+        let evaluation = calculator.evaluate(using: variable)
+        descriptionLabel.text = (evaluation.isPending) ? evaluation.description + "..." : evaluation.description + "="
+        
+        if let value = evaluation.result {
+            displayValue = value
+        }
+        
+        if let variable = variable, let value =  variable["M"] {
+            memoryLabel.text = "M = " + formatNumberToString(value)
+        }
+    }
+    
     // Update the display when a number (0-9) is clicked in the calculator's keyboard
-    @IBAction func touchDigit(_ sender: UIButton) {
+    @IBAction func touchDigit(_ sender: UICalculatorButton) {
         // Make sure the digit pressed has a title
-        guard let digit = sender.currentTitle else { return }
+        let digit = sender.symbol// else { return }
         
         // If the user is still typing and there is a value in the display, the digit will be appended to the previous one
         if userIsInTheMiddleOfTyping, let currentDisplayText = displayLabel.text {
@@ -65,25 +88,16 @@ class ViewController: UIViewController {
     }
     
     // Action that will perform the operations in the calculator
-    @IBAction func performOperation(_ sender: UIButton) {
+    @IBAction func performOperation(_ sender: UICalculatorButton) {
         if userIsInTheMiddleOfTyping, let value = displayValue {
             calculator.setOperand(value)
             userIsInTheMiddleOfTyping = false
         }
         
-        if let mathematicalSymbol = sender.currentTitle {
-            calculator.performOperation(mathematicalSymbol)
+        if sender.symbol != ""{
+            calculator.performOperation(sender.symbol)
         }
         updateDisplay()
-    }
-    
-    func updateDisplay() {
-        let evaluation = calculator.evaluate(using: variable)
-        descriptionLabel.text = (evaluation.isPending) ? evaluation.description + "..." : evaluation.description + "="
-        
-        if let value = evaluation.result {
-            displayValue = value
-        }
     }
     
     // Calculator's feature to erase typed digits
@@ -101,33 +115,27 @@ class ViewController: UIViewController {
         calculator.clean()
         displayLabel.text = " "
         descriptionLabel.text = " "
+        memoryLabel.text = " "
         userIsInTheMiddleOfTyping = false
         variable = nil
     }
     
-    @IBAction func performMemoryOperation(_ sender: UIButton) {
-        guard let title = sender.currentTitle else { return }
+    @IBAction func performMemoryOperation(_ sender: UICalculatorButton) {
+        guard sender.symbol != "" else { return }
         
-        if title == "→M" {
+        if sender.symbol == "→M" {
             if let value = displayValue {
                 variable = ["M": value]
                 userIsInTheMiddleOfTyping = false
                 updateDisplay()
             }
             
-        } else if title == "M" {
+        } else if sender.symbol == "M" {
             calculator.setOperand(variable: "M")
             userIsInTheMiddleOfTyping = false
             updateDisplay()
         }
     }
     
-    // This function will format a number to a string, and will follow the rule of 6 decimal digits at maximum
-    private func formatNumberToString(_ number: Double) -> String {
-        let  numberFormat = NumberFormatter()
-        numberFormat.maximumFractionDigits = 6
-        numberFormat.minimumIntegerDigits = 1
-        return numberFormat.string(from: NSNumber(value: number)) ?? String(number)
-    }
 }
 

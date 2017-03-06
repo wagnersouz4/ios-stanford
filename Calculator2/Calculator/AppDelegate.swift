@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  Calculator
 //
-//  Created by @wagnersouz4 on 22/02/17.
+//  Created by Wagner Souza on 22/02/17.
 //  Copyright © 2017 Wagner Souza. All rights reserved.
 //
 
