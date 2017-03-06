@@ -2,7 +2,7 @@
 //  Calculator.swift
 //  Calculator
 //
-//  Created by @wagnersouz4 on 22/02/17.
+//  Created by Wagner Souza on 22/02/17.
 //  Copyright © 2017 Wagner Souza. All rights reserved.
 //
 
@@ -51,25 +51,13 @@ struct Calculator {
                 return "memory"
             }
         }
-        
     }
     
     // Enum describing the Calculator's memory
-    private enum Memory: CustomStringConvertible {
+    private enum Memory {
         case number(Double)
         case opearationSymbol(String)
         case variable(String)
-        
-        var description: String {
-            switch self {
-            case .number(let number):
-                return String(number)
-            case .opearationSymbol(let symbol):
-                return symbol
-            case .variable(let named):
-                return named
-            }
-        }
     }
     
     // Dictionary containing the relationship between a mathematical symbol and its corresponding operation
@@ -100,6 +88,7 @@ struct Calculator {
     ]
     
     // A read-only computed property to get the accumulator's value
+    @available(iOS, deprecated: 10.2, message: "Please use the method evaluate instead.")
     var result: (accumulator: Double?, description: String?) {
         let (resultValue, _, _) = evaluate()
         return (resultValue, description)
@@ -109,6 +98,7 @@ struct Calculator {
     //private var pendingBinaryOperation: PendingBinaryOperation?
     
     // Computed property to inform if there is a pending binary operation in the calculator
+    @available(iOS, deprecated: 10.2, message: "Please use the method evaluate instead.")
     var resultIsPending: Bool {
         let (_, resultIsPending, _) = evaluate()
         return resultIsPending
@@ -118,6 +108,7 @@ struct Calculator {
     private var lastSymbol: String?
     
     // The calculator's description
+    @available(iOS, deprecated: 10.2, message: "Please use the method evaluate instead.")
     private var description: String {
         let (_, _, description) = evaluate()
         return description
@@ -127,7 +118,6 @@ struct Calculator {
     private let numberFormat = NumberFormatter()
     
     private var operandName = ""
-    
     private var memory = [Memory]()
     
     // MARK: - Methods
@@ -135,9 +125,9 @@ struct Calculator {
     // Method to return a format value as String, which will be used in the description
     private func formatNumberToString(_ number: Double) -> String {
         numberFormat.maximumFractionDigits = 6
-        // the value .x will be printed out as 0.x
+        // The value .x will be printed out as 0.x
         numberFormat.minimumIntegerDigits = 1
-        // if the formatting was not possible, the stringfied number is returned
+        // If the formatting was not possible, the stringfied number is returned
         return numberFormat.string(from: NSNumber(value: number)) ?? String(number)
     }
     
@@ -150,9 +140,7 @@ struct Calculator {
     }
     
     func evaluate(using variables: [String: Double]? = nil) -> (result: Double?, isPending: Bool, description: String) {
-        
         func calculate() -> (result: Double?, isPending: Bool, description: String) {
-            
             var accumulator: Double?
             var pendingOperation: PendingBinaryOperation?
             var lastOperation: Operation?
@@ -161,7 +149,6 @@ struct Calculator {
             }
             var description = ""
             
-            // Nested function to verify the lastOperation case (e.g .binary, .custom)
             func lastOperationDescriptionIs(_ description: String) -> Bool {
                 if let operation = lastOperation, operation.description == description {
                     return true
@@ -169,10 +156,11 @@ struct Calculator {
                 return false
             }
 
-            for m in memory {
-                switch m {
+            for step in memory {
+                switch step {
                 case .number(let number):
                     accumulator = number
+                    // This veirification is needed to avoid input repetion in the description (e.g 7+2+3)
                     if lastOperationDescriptionIs("binary") {
                         break
                     }
@@ -187,7 +175,6 @@ struct Calculator {
                         case .constant(let value):
                             accumulator = value
                             description = (operationIsPending) ? description + formatNumberToString(value) : formatNumberToString(value)
-                        
                         case .unary(let function):
                             guard let value = accumulator else { break }
                             if operationIsPending {
@@ -203,6 +190,7 @@ struct Calculator {
                                 if !lastOperationDescriptionIs("memory") {
                                     description = description + formatNumberToString(value) + symbol
                                 }
+                                
                                 accumulator = pendingOperation?.perform(with: value)
                                 if let newValue = accumulator {
                                     pendingOperation = PendingBinaryOperation(function: function, firstOperand: newValue)
@@ -236,6 +224,7 @@ struct Calculator {
                         lastOperation = operation
                     }
                 case .variable(let named):
+                    // As required in the assingment: If the dictionary does not contain the named operand as key the it's value is 0
                     accumulator = variables?[named] ?? 0.0
                     description = (operationIsPending) ? description + named : named
                     lastOperation = Operation.memory

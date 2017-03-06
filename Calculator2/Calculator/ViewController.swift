@@ -18,6 +18,7 @@ class ViewController: UIViewController {
     // Label containing the sequence of operands and operations
     @IBOutlet weak var descriptionLabel: UILabel!
     
+    // Label to display the M's value when set
     @IBOutlet weak var memoryLabel: UILabel!
     
     // Property to control when the user is the middle of a typing
@@ -64,12 +65,12 @@ class ViewController: UIViewController {
             displayValue = value
         }
         
-        if let variable = variable, let value =  variable["M"] {
-            memoryLabel.text = "M = " + formatNumberToString(value)
+        if let variable = variable, let value = variable["M"] {
+            memoryLabel.text = "M=" + formatNumberToString(value)
         }
     }
     
-    // Update the display when a number (0-9) is clicked in the calculator's keyboard
+    // Update the display when a number or "." is clicked in the calculator's keyboard
     @IBAction func touchDigit(_ sender: UICalculatorButton) {
         // Make sure the digit pressed has a title
         let digit = sender.symbol// else { return }
@@ -136,6 +137,5 @@ class ViewController: UIViewController {
             updateDisplay()
         }
     }
-    
 }
 

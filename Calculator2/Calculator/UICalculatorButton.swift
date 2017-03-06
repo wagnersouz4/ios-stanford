@@ -8,7 +8,7 @@
 
 import UIKit
 
+// The aim of this class is to add the property symbol to a UIButton as the calculator's buttons are images with no titile
 class UICalculatorButton: UIButton {
-
     var symbol = ""
 }
