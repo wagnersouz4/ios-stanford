@@ -27,13 +27,31 @@ struct Calculator {
     }
     
     // Enum accounting for the available operations in the calculator
-    private enum Operation {
+    private enum Operation: CustomStringConvertible {
         case constant(Double)
         case unary((Double) -> (Double))
         case binary(BinaryOperation)
         case equals
         case custom(() -> (Double))
         case memory
+        
+        var description: String {
+            switch self {
+            case .constant:
+                return "constant"
+            case .unary:
+                return "unary"
+            case .binary:
+                return "binary"
+            case .equals:
+                return "equals"
+            case .custom:
+                return "custom"
+            case .memory:
+                return "memory"
+            }
+        }
+        
     }
     
     // Enum describing the Calculator's memory
@@ -140,37 +158,19 @@ struct Calculator {
             }
             var description = ""
             
-            // This nested function is used to control how description in build when the previous operation is binary (e.g 7+√9)
-            func lastOperationIsBinary() -> Bool {
-                if let operation = lastOperation {
-                    switch operation {
-                    case .binary:
-                        return true
-                    default:
-                        return false
-                    }
+            // Nested function to verify the lastOperation case (e.g .binary, .custom)
+            func lastOperationDescriptionIs(_ description: String) -> Bool {
+                if let operation = lastOperation, operation.description == description {
+                    return true
                 }
                 return false
             }
-
-            func lastOperationIsUnary() -> Bool {
-                if let operation = lastOperation {
-                    switch operation {
-                    case .unary:
-                        return true
-                    default:
-                        return false
-                    }
-                }
-                return false
-            }
-            
             print(memory)
             for m in memory {
                 switch m {
                 case .number(let number):
                     accumulator = number
-                    if lastOperationIsBinary() {
+                    if lastOperationDescriptionIs("binary") {
                         break
                     }
                     if operationIsPending {
@@ -196,16 +196,22 @@ struct Calculator {
                         case .binary(let function):
                             guard let value = accumulator else { break }
                             if operationIsPending {
-                                description = description + formatNumberToString(value) + symbol
+                                // this comparison is necessary to avoid that a number appears right next to a named operand (e.g 1+X3)
+                                if !lastOperationDescriptionIs("memory") {
+                                    description = description + formatNumberToString(value) + symbol
+                                }
                                 accumulator = pendingOperation?.perform(with: value)
-                                pendingOperation = PendingBinaryOperation(function: function, firstOperand: value)
+                                if let newValue = accumulator {
+                                    pendingOperation = PendingBinaryOperation(function: function, firstOperand: newValue)
+                                }
                             } else {
                                 pendingOperation = PendingBinaryOperation(function: function, firstOperand: value)
                                 description.append(symbol)
+                                accumulator = nil
                             }
                         case .equals:
                             guard let value = accumulator else { break }
-                            if lastOperationIsBinary() {
+                            if lastOperationDescriptionIs("binary") {
                                 description.append(formatNumberToString(value))
                             }
                             
