@@ -58,16 +58,25 @@ class ViewController: UIViewController {
     }
     
     func updateDisplay() {
-        let evaluation = calculator.evaluate(using: variable)
-        descriptionLabel.text = (evaluation.isPending) ? evaluation.description + "..." : evaluation.description + "="
         
-        if let value = evaluation.result {
-            displayValue = value
+        do {
+            let evaluation = try calculator.evaluateWithErrorChecking(using: variable)
+            
+            descriptionLabel.text = (evaluation.isPending) ? evaluation.description + "..." : evaluation.description + "="
+            
+            if let value = evaluation.result {
+                displayValue = value
+            }
+            
+            if let variable = variable, let value = variable["M"] {
+                memoryLabel.text = "M=" + formatNumberToString(value)
+            }
+        } catch {
+            calculator.clean()
+            clean()
+            descriptionLabel.text = "Invalid operation!"
         }
-        
-        if let variable = variable, let value = variable["M"] {
-            memoryLabel.text = "M=" + formatNumberToString(value)
-        }
+
     }
     
     // Update the display when a number or "." is clicked in the calculator's keyboard

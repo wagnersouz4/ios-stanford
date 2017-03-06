@@ -60,6 +60,11 @@ struct Calculator {
         case variable(String)
     }
     
+    // Enum describing not a number and infinite errors
+    enum OperationError: Error {
+        case nan, infinity
+    }
+    
     // Dictionary containing the relationship between a mathematical symbol and its corresponding operation
     private var operations: [String: Operation] = [
         "π": Operation.constant(Double.pi),
@@ -94,18 +99,12 @@ struct Calculator {
         return (resultValue, description)
     }
     
-    // Calculator's property to auxiliate binary operations
-    //private var pendingBinaryOperation: PendingBinaryOperation?
-    
     // Computed property to inform if there is a pending binary operation in the calculator
     @available(iOS, deprecated: 10.2, message: "Please use the method evaluate instead.")
     var resultIsPending: Bool {
         let (_, resultIsPending, _) = evaluate()
         return resultIsPending
     }
-    
-    // Property to obtain the symbol of the last operation performed
-    private var lastSymbol: String?
     
     // The calculator's description
     @available(iOS, deprecated: 10.2, message: "Please use the method evaluate instead.")
@@ -117,7 +116,7 @@ struct Calculator {
     // Property to format value in the description to have at maximum 6 decimal digits
     private let numberFormat = NumberFormatter()
     
-    private var operandName = ""
+    // Calculator's memory
     private var memory = [Memory]()
     
     // MARK: - Methods
@@ -155,9 +154,9 @@ struct Calculator {
                 }
                 return false
             }
-
-            for step in memory {
-                switch step {
+            
+            for input in memory {
+                switch input {
                 case .number(let number):
                     accumulator = number
                     // This veirification is needed to avoid input repetion in the description (e.g 7+2+3)
@@ -235,6 +234,24 @@ struct Calculator {
         }
 
         return calculate()
+    }
+    
+    // As required in the assignment we a not allowed to break any APIs' calls in order to handle errors.
+    // As a consequence, it's not allowed the usage of do/catch, try or error propagation in any already defined method.
+    // A simple approach to have a new method that will call evaluate and throws an error based on the obtained result from evaluate
+    func evaluateWithErrorChecking(using variables: [String: Double]? = nil) throws -> (result: Double?, isPending: Bool, description: String) {
+        let evaluation = evaluate(using: variables)
+        
+        if let result = evaluation.result {
+            if result.isNaN {
+                throw OperationError.nan
+            }
+            
+            if result.isInfinite {
+                throw OperationError.infinity
+            }
+        }
+        return evaluation
     }
     
     mutating func performOperation(_ operationSymbol: String) {
