@@ -89,7 +89,10 @@ struct Calculator {
         "÷": Operation.binary({ $0 / $1 }),
         "×": Operation.binary({ $0 * $1 }),
         "=": Operation.equals,
-        "Rand": Operation.custom({ 1 / Double(arc4random()) * 1000000 }), // closure to generate a random double precision number
+        "Rand": Operation.custom({
+            srand48(Int(arc4random()))
+            return drand48()
+        }), // closure to generate a random double precision number
     ]
     
     // A read-only computed property to get the accumulator's value
