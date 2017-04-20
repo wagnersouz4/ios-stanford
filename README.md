@@ -1,4 +1,4 @@
-ssingments of Developing iOS 10 Apps with Swift by Stanford
+# Assingments of Developing iOS 10 Apps with Swift by Stanford
 
 ### Introduction
 Assingments from the IOS development course offered by Stanford. It's free and is available at https://itunes.apple.com/in/course/developing-ios-10-apps-swift/id1198467120.
